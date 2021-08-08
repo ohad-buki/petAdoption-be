@@ -5,8 +5,9 @@ const ajv = new Ajv();
 const newUserSchema = S.object()
   .prop("name", S.string().required())
   .prop("email", S.string().required())
-  .prop("password", S.number().minimum(6).required())
-  .prop("age", S.number().maximum(3))
+  .prop("password", S.string().minLength(6).required())
+  .prop("age", S.string().maxLength(3))
+  .prop("phone", S.string().minLength(9).maxLength(11))
   .prop("description", S.string())
   .prop("photoURL", S.string())
   .valueOf();
@@ -27,6 +28,16 @@ const loginSchema = S.object()
   .prop("password", S.string().minLength(5).required())
   .valueOf();
 const validatelogin = ajv.compile(loginSchema);
+// const validatelogin = (req,res,next)=>{
+//   try{
+//     const validate = ajv.compile(loginSchema);
+//     const valid = validate(req.body);
+// if (!valid) throw new Error("invalid input");
+// next()
+//   }catch(err){
+//     next(err)
+//   }
+// }
 
 const userVal = {
   validateUser: validateUser,

@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const usersDataPath = "./routes/usersdata.json";
 const userVal = require("../middlewares/userValid");
+const { quary, getUser } = require("../data/mysqldb");
 
 const getAllUsers = async () => {
   return new Promise((resolve, reject) => {
@@ -38,19 +39,25 @@ router.get("/", async (req, res, next) => {
 
 router.post("/signUp", async (req, res, next) => {
   try {
+    console.log(req.body);
     valid = userVal.validateUser(req.body);
     if (!valid) {
       throw new Error("invalid input");
     }
-    const allUsers = await getAllUsers();
-    const newUserId = req.body.email;
-    if (allUsers[newUserId]) {
-      res.send(allUsers[newUserId]);
-    } else {
-      allUsers[newUserId] = { ...req.body, isAdmin: false };
-      await postAllUsers(allUsers);
-      res.send(allUsers[newUserId]);
-    }
+    const { name, age, email, phone, description, password } = req.body;
+    // const sql = `INSERT INTO users (password,phone,name,description,age,email) VALUES ('${password}','${phone}','${name}','${description}','${age}','${email}');`;
+    // const sql = `SELECT * FROM users`;
+    const sqlRes = await getUser(email);
+    res.send(sqlRes);
+    // const allUsers = await getAllUsers();
+    // const newUserId = req.body.email;
+    // if (allUsers[newUserId]) {
+    //   res.send(allUsers[newUserId]);
+    // } else {
+    //   allUsers[newUserId] = { ...req.body, isAdmin: false };
+    //   await postAllUsers(allUsers);
+    //   res.send(allUsers[newUserId]);
+    // }
   } catch (err) {
     next(err);
   }
