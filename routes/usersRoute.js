@@ -1,32 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
-const usersDataPath = "./routes/usersdata.json";
-const userVal = require("../middlewares/userValid");
-const { quary, getUser } = require("../data/mysqldb");
-
-const getAllUsers = async () => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(usersDataPath, (err, buffer) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(JSON.parse(buffer.toString()));
-    });
-  });
-};
-
-const postAllUsers = async (users) => {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(usersDataPath, JSON.stringify(users), (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
-};
+const {
+  validatelogin,
+  validateEditUser,
+  validateUser,
+} = require("../middlewares/userValid");
+const {
+  quary,
+  getUserByEmail,
+  getUserById,
+  addUser,
+  getAllUsers,
+  updateUser,
+} = require("../data/mysqlUsers");
+const bcrypt = require("bcrypt");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -37,70 +24,63 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/signUp", async (req, res, next) => {
+router.post("/signUp", validateUser(), async (req, res, next) => {
   try {
-    console.log(req.body);
-    valid = userVal.validateUser(req.body);
-    if (!valid) {
-      throw new Error("invalid input");
-    }
     const { name, age, email, phone, description, password } = req.body;
-    // const sql = `INSERT INTO users (password,phone,name,description,age,email) VALUES ('${password}','${phone}','${name}','${description}','${age}','${email}');`;
-    // const sql = `SELECT * FROM users`;
-    const sqlRes = await getUser(email);
-    res.send(sqlRes);
-    // const allUsers = await getAllUsers();
-    // const newUserId = req.body.email;
-    // if (allUsers[newUserId]) {
-    //   res.send(allUsers[newUserId]);
-    // } else {
-    //   allUsers[newUserId] = { ...req.body, isAdmin: false };
-    //   await postAllUsers(allUsers);
-    //   res.send(allUsers[newUserId]);
-    // }
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.post("/login", async (req, res, next) => {
-  try {
-    console.log(req.body);
-    valid = userVal.validatelogin(req.body);
-    if (!valid) {
-      throw new Error("invalid input");
-    }
-    const allUsers = await getAllUsers();
-    if (
-      allUsers[req.body.email] &&
-      allUsers[req.body.email].password === req.body.password
-    ) {
-      res.send(allUsers[req.body.email]);
+    const hash = await bcrypt.hash(password, 10);
+    const user = await getUserByEmail(email);
+    if (user[0]) {
+      const validPass = await bcrypt.compare(password, user[0].password);
+      if (validPass) {
+        res.send(user);
+        return;
+      }
+      res.status(400).send("user allready exists but password dosnt match");
+      return;
     } else {
-      throw new Error("password or email dont match");
+      await addUser(hash, email, name, age, description, phone);
+      const user = await getUserByEmail(email);
+      res.send(user);
     }
   } catch (err) {
-    err.status = 400;
     next(err);
   }
 });
 
-router.put("/edit/:id", async (req, res, next) => {
+router.post("/login", validatelogin(), async (req, res, next) => {
   try {
-    valid = userVal.validateEditUser(req.body);
-    if (!valid) {
-      throw new Error("invalid input");
+    const { email, password } = req.body;
+    const user = await getUserByEmail(email);
+    if (user[0]) {
+      const validPass = await bcrypt.compare(password, user[0].password);
+      if (validPass) {
+        res.send(user);
+        return;
+      } else {
+        res.status(400).send("password dosnt match");
+      }
+    } else {
+      res.status(400).send("user dosnt exist");
     }
-    const allUsers = await getAllUsers();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put("/edit/:id", validateEditUser(), async (req, res, next) => {
+  try {
     const id = req.params.id;
-    allUsers[id] = { ...allUsers[id], ...req.body };
-    if (req.body.email) {
-      allUsers[req.body.email] = allUsers[id];
-      delete allUsers[id];
-      id = req.body.email;
+    const set = "";
+    console.log(req.body);
+    if (req.body !== {}) {
+      const arr = Object.entries(req);
+      arr.forEach(async (item) => {
+        set += `'${item[0]}' = '${item[1]}',`;
+      });
+      const user = await getUserById(id);
+      res.send(user);
+      return;
     }
-    await postAllUsers(allUsers);
-    res.send(allUsers[id]);
   } catch (err) {
     next(err);
   }

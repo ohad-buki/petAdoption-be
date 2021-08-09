@@ -1,17 +1,18 @@
 const S = require("fluent-json-schema");
-const Ajv = require("ajv");
-const ajv = new Ajv();
+const validateS = require("./schemavalid");
 
 const newUserSchema = S.object()
   .prop("name", S.string().required())
   .prop("email", S.string().required())
   .prop("password", S.string().minLength(6).required())
-  .prop("age", S.string().maxLength(3))
+  .prop("age", S.string(3))
   .prop("phone", S.string().minLength(9).maxLength(11))
   .prop("description", S.string())
   .prop("photoURL", S.string())
   .valueOf();
-const validateUser = ajv.compile(newUserSchema);
+const validateUser = () => {
+  return validateS(newUserSchema);
+};
 
 const editUserSchema = S.object()
   .prop("name", S.string())
@@ -21,23 +22,17 @@ const editUserSchema = S.object()
   .prop("description", S.string())
   .prop("photoURL", S.string())
   .valueOf();
-const validateEditUser = ajv.compile(editUserSchema);
+const validateEditUser = () => {
+  return validateS(editUserSchema);
+};
 
 const loginSchema = S.object()
   .prop("email", S.string().required())
   .prop("password", S.string().minLength(5).required())
   .valueOf();
-const validatelogin = ajv.compile(loginSchema);
-// const validatelogin = (req,res,next)=>{
-//   try{
-//     const validate = ajv.compile(loginSchema);
-//     const valid = validate(req.body);
-// if (!valid) throw new Error("invalid input");
-// next()
-//   }catch(err){
-//     next(err)
-//   }
-// }
+const validatelogin = () => {
+  return validateS(loginSchema);
+};
 
 const userVal = {
   validateUser: validateUser,
