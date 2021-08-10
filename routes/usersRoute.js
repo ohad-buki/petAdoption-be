@@ -7,8 +7,7 @@ const {
 } = require("../middlewares/userValid");
 const {
   quary,
-  getUserByEmail,
-  getUserById,
+  getUserBy,
   addUser,
   getAllUsers,
   updateUser,
@@ -26,9 +25,10 @@ router.get("/", async (req, res, next) => {
 
 router.post("/signUp", validateUser(), async (req, res, next) => {
   try {
-    const { name, age, email, phone, description, password } = req.body;
+    const { name, age, email, phone, description, password, photo_url } =
+      req.body;
     const hash = await bcrypt.hash(password, 10);
-    const user = await getUserByEmail(email);
+    let user = await getUserBy("email", email);
     if (user[0]) {
       const validPass = await bcrypt.compare(password, user[0].password);
       if (validPass) {
@@ -38,8 +38,8 @@ router.post("/signUp", validateUser(), async (req, res, next) => {
       res.status(400).send("user allready exists but password dosnt match");
       return;
     } else {
-      await addUser(hash, email, name, age, description, phone);
-      const user = await getUserByEmail(email);
+      await addUser(hash, email, name, age, description, phone, photo_url);
+      user = await getUserBy("email", email);
       res.send(user);
     }
   } catch (err) {
@@ -50,7 +50,7 @@ router.post("/signUp", validateUser(), async (req, res, next) => {
 router.post("/login", validatelogin(), async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await getUserByEmail(email);
+    const user = await getUserBy("email", email);
     if (user[0]) {
       const validPass = await bcrypt.compare(password, user[0].password);
       if (validPass) {
@@ -70,14 +70,21 @@ router.post("/login", validatelogin(), async (req, res, next) => {
 router.put("/edit/:id", validateEditUser(), async (req, res, next) => {
   try {
     const id = req.params.id;
-    const set = "";
-    console.log(req.body);
+    let set = "";
     if (req.body !== {}) {
-      const arr = Object.entries(req);
-      arr.forEach(async (item) => {
-        set += `'${item[0]}' = '${item[1]}',`;
+      const arr = Object.entries(req.body);
+      arr.forEach((item, i) => {
+        if (item[1] && item[1] !== "") {
+          if (i === arr.length - 1) {
+            set += `${item[0]} = '${item[1]}'`;
+          } else {
+            set += `${item[0]} = '${item[1]}',`;
+          }
+        }
       });
-      const user = await getUserById(id);
+      console.log(set, req.body);
+      await updateUser(set, id);
+      const user = await getUserBy("user_id", id);
       res.send(user);
       return;
     }

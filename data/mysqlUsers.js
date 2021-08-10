@@ -1,5 +1,5 @@
 const pool = require("./mysqlDB");
-
+const SQL = require("@nearform/sql");
 const quary = async (sqlText) => {
   return new Promise((resolve, reject) => {
     pool.query(sqlText, (err, res) => {
@@ -12,9 +12,17 @@ const quary = async (sqlText) => {
   });
 };
 
-const addUser = async (password, email, userName, age, description, phone) => {
+const addUser = async (
+  password,
+  email,
+  userName,
+  age,
+  description,
+  phone,
+  photo_url
+) => {
   try {
-    const sql = `INSERT INTO users (password,phone,name,description,age,email) VALUES ('${password}','${phone}','${userName}','${description}',${age},'${email}');`;
+    const sql = `INSERT INTO users (password,phone,name,description,age,email,photo_url) VALUES ('${password}','${phone}','${userName}','${description}','${age}','${email}','${photo_url}');`;
     const res = await quary(sql);
     return res;
   } catch (e) {
@@ -22,20 +30,11 @@ const addUser = async (password, email, userName, age, description, phone) => {
   }
 };
 
-const getUserByEmail = async (userEmail) => {
+const getUserBy = async (colName, value) => {
   try {
     const user = await quary(
-      `SELECT * FROM users WHERE email = '${userEmail}';`
+      `SELECT * FROM users WHERE ${colName} = '${value}';`
     );
-    return user;
-  } catch (e) {
-    return e;
-  }
-};
-
-const getUserById = async (id) => {
-  try {
-    const user = await quary(`SELECT * FROM users WHERE user_id = '${id}';`);
     return user;
   } catch (e) {
     return e;
@@ -53,9 +52,9 @@ const getAllUsers = async () => {
 
 const updateUser = async (set, userId) => {
   try {
-    const res = await quary(`UPDATE users
-        SET ${set}
-        WHERE user_id = '${userId}';`);
+    const res = await quary(
+      `UPDATE users SET ${set} WHERE user_id = ${userId};`
+    );
     return res;
   } catch (e) {
     console.log(e);
@@ -63,8 +62,7 @@ const updateUser = async (set, userId) => {
 };
 
 module.exports.quary = quary;
-module.exports.getUserByEmail = getUserByEmail;
-module.exports.getUserById = getUserById;
+module.exports.getUserBy = getUserBy;
 module.exports.getAllUsers = getAllUsers;
 module.exports.addUser = addUser;
 module.exports.updateUser = updateUser;

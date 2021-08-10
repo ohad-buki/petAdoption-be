@@ -5,10 +5,10 @@ const newUserSchema = S.object()
   .prop("name", S.string().required())
   .prop("email", S.string().required())
   .prop("password", S.string().minLength(6).required())
-  .prop("age", S.string(3))
+  .prop("age", S.string())
   .prop("phone", S.string().minLength(9).maxLength(11))
   .prop("description", S.string())
-  .prop("photoURL", S.string())
+  .prop("photo_url", S.string())
   .valueOf();
 const validateUser = () => {
   return validateS(newUserSchema);
@@ -17,10 +17,11 @@ const validateUser = () => {
 const editUserSchema = S.object()
   .prop("name", S.string())
   .prop("email", S.string())
-  .prop("password", S.number().minimum(6))
-  .prop("age", S.number().maximum(3))
+  .prop("password", S.string())
+  .prop("phone", S.string().minLength(9).maxLength(11))
+  .prop("age", S.string())
   .prop("description", S.string())
-  .prop("photoURL", S.string())
+  .prop("photo_url", S.string())
   .valueOf();
 const validateEditUser = () => {
   return validateS(editUserSchema);
