@@ -41,9 +41,9 @@ const getUserBy = async (colName, value) => {
   }
 };
 
-const getAllUsers = async () => {
+const getAllUsers = async (where) => {
   try {
-    const user = await quary(`SELECT * FROM users;`);
+    const user = await quary(`SELECT * FROM users ${where};`);
     return user;
   } catch (e) {
     console.log(e);

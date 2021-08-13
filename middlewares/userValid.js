@@ -22,6 +22,7 @@ const editUserSchema = S.object()
   .prop("age", S.string())
   .prop("description", S.string())
   .prop("photo_url", S.string())
+  .prop("is_admin", S.boolean())
   .valueOf();
 const validateEditUser = () => {
   return validateS(editUserSchema);
@@ -35,10 +36,19 @@ const validatelogin = () => {
   return validateS(loginSchema);
 };
 
+const getUserSchema = S.object()
+  .prop("email", S.string())
+  .prop("name", S.string())
+  .valueOf();
+const validateGetUser = () => {
+  return validateS(getUserSchema);
+};
+
 const userVal = {
   validateUser: validateUser,
   validateEditUser: validateEditUser,
   validatelogin: validatelogin,
+  validateGetUser: validateGetUser,
 };
 
 module.exports = userVal;

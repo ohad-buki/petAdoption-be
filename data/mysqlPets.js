@@ -14,9 +14,47 @@ const quary = async (sqlText) => {
 
 const getPetsBy = async (where) => {
   try {
-    const user = await quary(`SELECT * FROM users WHERE ${where};`);
+    const user = await quary(`SELECT * FROM pets ${where};`);
     return user;
   } catch (e) {
     return e;
   }
 };
+
+const updatePet = async (set, pet_id) => {
+  try {
+    const res = await quary(`UPDATE pets SET ${set} WHERE pet_id = ${pet_id};`);
+    return res;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const addPet = async ({
+  name,
+  type,
+  age,
+  photo_url,
+  color,
+  weight,
+  height,
+  dietary_restrictions,
+  hypoallergenic,
+}) => {
+  try {
+    const sql = `INSERT INTO pets (type,color,name,weight,age,height,photo_url,dietary_restrictions,hypoallergenic) VALUES ('${type}','${color}','${name}',${weight},'${age}',${height},'${photo_url}','${dietary_restrictions}',${hypoallergenic});`;
+    const res = await quary(sql);
+
+    return res;
+  } catch (e) {
+    return e;
+  }
+};
+
+const mysqlPets = {
+  addPet: addPet,
+  updatePet: updatePet,
+  getPetsBy: getPetsBy,
+};
+
+module.exports = mysqlPets;
