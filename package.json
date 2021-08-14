@@ -22,6 +22,7 @@
     "fluent-json-schema": "^3.0.1",
     "fs": "0.0.1-security",
     "mysql": "^2.18.1",
+    "postgrator": "^4.2.0",
     "uuid": "^8.3.2"
   }
 }

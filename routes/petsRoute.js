@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { addPet, updatePet, getPetsBy } = require("../data/mysqlPets");
+const {
+  addPet,
+  updatePet,
+  getPetsBy,
+  getPetsByLimit,
+} = require("../data/mysqlPets");
 const {
   heightWeight,
   validatePet,
@@ -36,6 +41,16 @@ router.get("/", async (req, res, next) => {
     res.send(data);
   } catch (err) {
     next(err);
+  }
+});
+
+router.get("/limit/:limit", async (req, res, next) => {
+  const { limit } = req.params;
+  try {
+    const pets = await getPetsByLimit(limit);
+    res.send(pets);
+  } catch (e) {
+    next(e);
   }
 });
 

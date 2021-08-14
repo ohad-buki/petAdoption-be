@@ -1,4 +1,4 @@
-const pool = require("./mysqlDB");
+const { pool } = require("./mysqlDB");
 
 const quary = async (sqlText) => {
   return new Promise((resolve, reject) => {
@@ -15,6 +15,17 @@ const quary = async (sqlText) => {
 const getPetsBy = async (where) => {
   try {
     const user = await quary(`SELECT * FROM pets ${where};`);
+    return user;
+  } catch (e) {
+    return e;
+  }
+};
+
+const getPetsByLimit = async (limit) => {
+  try {
+    const user = await quary(
+      `SELECT * FROM pets WHERE status = "available" LIMIT ${limit};`
+    );
     return user;
   } catch (e) {
     return e;
@@ -44,7 +55,6 @@ const addPet = async ({
   try {
     const sql = `INSERT INTO pets (type,color,name,weight,age,height,photo_url,dietary_restrictions,hypoallergenic) VALUES ('${type}','${color}','${name}',${weight},'${age}',${height},'${photo_url}','${dietary_restrictions}',${hypoallergenic});`;
     const res = await quary(sql);
-
     return res;
   } catch (e) {
     return e;
@@ -55,6 +65,7 @@ const mysqlPets = {
   addPet: addPet,
   updatePet: updatePet,
   getPetsBy: getPetsBy,
+  getPetsByLimit: getPetsByLimit,
 };
 
 module.exports = mysqlPets;

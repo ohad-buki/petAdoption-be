@@ -1,4 +1,4 @@
-const pool = require("./mysqlDB");
+const { pool } = require("./mysqlDB");
 const SQL = require("@nearform/sql");
 const quary = async (sqlText) => {
   return new Promise((resolve, reject) => {
