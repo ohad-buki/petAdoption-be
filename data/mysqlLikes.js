@@ -35,7 +35,7 @@ const deleteLike = async (user_id, pet_id) => {
 const getPetsLikedByUser = async (user_id) => {
   try {
     const pets = await quary(
-      `SELECT * FROM pets WHERE pet_id IN (SELECT * FROM likes WHERE user_id = ${user_id});`
+      `SELECT * FROM pets WHERE pet_id IN (SELECT pet_id FROM likes WHERE user_id = ${user_id});`
     );
     return pets;
   } catch (e) {
@@ -46,7 +46,7 @@ const getPetsLikedByUser = async (user_id) => {
 const getUsersThatLikedPet = async (pet_id) => {
   try {
     const users = await quary(
-      `SELECT * FROM users WHERE user_id IN (SELECT * FROM likes WHERE pet_id = ${pet_id});`
+      `SELECT * FROM users WHERE user_id IN (SELECT user_id FROM likes WHERE pet_id = ${pet_id});`
     );
     return users;
   } catch (e) {
@@ -67,7 +67,7 @@ const getSpecificLike = async (user_id, pet_id) => {
 
 const mysqlLikes = {
   addLike: addLike,
-  getLikesBy: getPetsLikedByUser,
+  getPetsLikedByUser: getPetsLikedByUser,
   getUsersThatLikedPet: getUsersThatLikedPet,
   deleteLike: deleteLike,
   getSpecificLike: getSpecificLike,

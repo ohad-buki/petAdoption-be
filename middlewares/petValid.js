@@ -26,13 +26,13 @@ const validatePet = () => {
 
 const heightWeight = (key, value) => {
   if (key == "maxHeight") {
-    return ` height < ${value}`;
+    return ` height <= ${value}`;
   } else if (key === "maxWeight") {
-    return ` weight < ${value}`;
+    return ` weight <= ${value}`;
   } else if (key === "minHeight") {
-    return ` height > ${value}`;
-  } else if (key === "maxWeight") {
-    return ` weight > ${value}`;
+    return ` height >= ${value}`;
+  } else if (key === "minWeight") {
+    return ` weight >= ${value}`;
   } else if (key === "hypoallergenic") {
     return ` hypoallergenic = ${value}`;
   }

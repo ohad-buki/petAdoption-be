@@ -11,6 +11,7 @@ const {
   validatePet,
   validateNewPet,
 } = require("../middlewares/petValid.js");
+const { authenticationToken } = require("../middlewares/authToken");
 
 const heightWeightString =
   "maxHeight maxWeight minHeight minWeight hypoallergenic";
@@ -55,40 +56,46 @@ router.get("/limit/:limit", async (req, res, next) => {
   }
 });
 
-router.put("/edit/:pet_id", validatePet(), async (req, res, next) => {
-  let set = "";
-  const { pet_id } = req.params;
-  const reqArr = Object.entries(req.body);
-  try {
-    if (reqArr.length > 0) {
-      reqArr.forEach(([key, value], i) => {
-        if (value && value !== "") {
-          if (i === 0) {
-            // if (heightWeightString.includes(key)) {
-            //   set += `${heightWeight(key, value)}`;
-            // } else {
-            set += `${key} = '${value}'`;
-            // }
-          } else {
-            // if (heightWeightString.includes(key)) {
-            //   set += ` , ${heightWeight(key, value)}`;
-            // } else {
-            set += ` , ${key} = '${value}'`;
-            // }
+router.put(
+  "/edit/:pet_id",
+  authenticationToken(),
+  validatePet(),
+  async (req, res, next) => {
+    let set = "";
+    const { pet_id } = req.params;
+    const reqArr = Object.entries(req.body);
+    try {
+      if (reqArr.length > 0) {
+        reqArr.forEach(([key, value], i) => {
+          if (value && value !== "") {
+            if (i === 0) {
+              // if (heightWeightString.includes(key)) {
+              //   set += `${heightWeight(key, value)}`;
+              // } else {
+              set += `${key} = '${value}'`;
+              // }
+            } else {
+              // if (heightWeightString.includes(key)) {
+              //   set += ` , ${heightWeight(key, value)}`;
+              // } else {
+              set += ` , ${key} = '${value}'`;
+              // }
+            }
           }
-        }
-      });
-      await updatePet(set, pet_id);
+        });
+        await updatePet(set, pet_id);
+      }
+      const data = await getPetsBy(`WHERE pet_id = ${pet_id}`);
+      res.send(data);
+    } catch (err) {
+      next(err);
     }
-    const data = await getPetsBy(`WHERE pet_id = ${pet_id}`);
-    res.send(data);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 router.post(
   "/addPet",
+  authenticationToken(),
   validateNewPet(),
   validatePet(),
   async (req, res, next) => {

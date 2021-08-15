@@ -7,8 +7,9 @@ const {
   deleteLike,
   getSpecificLike,
 } = require("../data/mysqlLikes");
+const { authenticationToken } = require("../middlewares/authToken");
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticationToken(), async (req, res, next) => {
   try {
     const { user_id, pet_id } = req.body;
     const exist = await getSpecificLike(user_id, pet_id);
@@ -22,7 +23,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.delete("/", async (req, res, next) => {
+router.put("/", authenticationToken(), async (req, res, next) => {
   try {
     const { user_id, pet_id } = req.body;
     const response = await deleteLike(user_id, pet_id);
@@ -32,35 +33,46 @@ router.delete("/", async (req, res, next) => {
   }
 });
 
-router.get("/getPetsByUser/:user_id", async (req, res, next) => {
-  try {
-    const { user_id } = req.params;
-    const petsUserLikes = await getPetsLikedByUser(user_id);
-    res.send(petsUserLikes);
-  } catch (e) {
-    next(e);
+router.get(
+  "/getPetsByUser/:user_id",
+  authenticationToken(),
+  async (req, res, next) => {
+    try {
+      const { user_id } = req.params;
+      const petsUserLikes = await getPetsLikedByUser(user_id);
+      res.send(petsUserLikes);
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
-router.get("/getUsersByPet/:pet_id", async (req, res, next) => {
-  try {
-    const { pet_id } = req.params;
-    const usersByPet = await getUsersThatLikedPet(pet_id);
-    res.send(usersByPet);
-  } catch (e) {
-    next(e);
+router.get(
+  "/getUsersByPet/:pet_id",
+  authenticationToken(),
+  async (req, res, next) => {
+    try {
+      const { pet_id } = req.params;
+      const usersByPet = await getUsersThatLikedPet(pet_id);
+      res.send(usersByPet);
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
-router.get("/specific/:user_id/:pet_id", async (req, res, next) => {
-  try {
-    const { user_id, pet_id } = req.params;
-    const like = await getSpecificLike(user_id, pet_id);
-    console.log(like);
-    res.send(like);
-  } catch (e) {
-    next(e);
+router.get(
+  "/specific/:user_id/:pet_id",
+  authenticationToken(),
+  async (req, res, next) => {
+    try {
+      const { user_id, pet_id } = req.params;
+      const like = await getSpecificLike(user_id, pet_id);
+      res.send(like);
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
 module.exports = router;

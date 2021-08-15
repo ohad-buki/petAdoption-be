@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const port = 5000;
 const { postgrator } = require("./data/mysqlDB");
+
 app.use(express.json());
 app.use(cors());
 
