@@ -83,7 +83,7 @@ router.post("/login", validatelogin(), async (req, res, next) => {
 
 router.put("/edit/:id", validateEditUser(), async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     let set = "";
     const arr = Object.entries(req.body);
     if (arr.length > 0) {

@@ -8,6 +8,7 @@ app.use(cors());
 
 app.use("/users", require("./routes/usersRoute.js"));
 app.use("/pets", require("./routes/petsRoute.js"));
+app.use("/likes", require("./routes/likesRoute.js"));
 
 postgrator
   .migrate()

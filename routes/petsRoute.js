@@ -11,6 +11,7 @@ const {
   validatePet,
   validateNewPet,
 } = require("../middlewares/petValid.js");
+
 const heightWeightString =
   "maxHeight maxWeight minHeight minWeight hypoallergenic";
 
@@ -63,9 +64,17 @@ router.put("/edit/:pet_id", validatePet(), async (req, res, next) => {
       reqArr.forEach(([key, value], i) => {
         if (value && value !== "") {
           if (i === 0) {
+            // if (heightWeightString.includes(key)) {
+            //   set += `${heightWeight(key, value)}`;
+            // } else {
             set += `${key} = '${value}'`;
+            // }
           } else {
+            // if (heightWeightString.includes(key)) {
+            //   set += ` , ${heightWeight(key, value)}`;
+            // } else {
             set += ` , ${key} = '${value}'`;
+            // }
           }
         }
       });

@@ -14,8 +14,8 @@ const quary = async (sqlText) => {
 
 const getPetsBy = async (where) => {
   try {
-    const user = await quary(`SELECT * FROM pets ${where};`);
-    return user;
+    const pets = await quary(`SELECT * FROM pets ${where};`);
+    return pets;
   } catch (e) {
     return e;
   }
