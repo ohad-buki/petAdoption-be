@@ -15,10 +15,12 @@ const {
 } = require("../data/mysqlUsers");
 const { sign, authenticationToken } = require("../middlewares/authToken");
 const bcrypt = require("bcrypt");
+const isAdmin = require("../middlewares/isAdmin");
 
 router.get(
   "/",
   authenticationToken(),
+  isAdmin(),
   validateGetUser(),
   async (req, res, next) => {
     let where = "";
@@ -28,15 +30,21 @@ router.get(
         reqArr.forEach(([key, value], i) => {
           if (value && value !== "") {
             if (i === 0) {
-              where += `WHERE ${key} = '${value}'`;
+              where += `${key} = '${value}'`;
             } else {
               where += ` AND ${key} = '${value}'`;
             }
           }
         });
+        console.log(where);
+        const data = await getUserBy(where);
+        console.log(data);
+        res.send(data);
+        return;
       }
       const data = await getAllUsers(where);
       res.send(data);
+      return;
     } catch (err) {
       next(err);
     }
@@ -63,8 +71,9 @@ router.post("/signUp", validateUser(), async (req, res, next) => {
   try {
     const { name, age, email, phone, description, password, photo_url } =
       req.body;
+    const whereEmail = `email = '${email}'`;
     const hash = await bcrypt.hash(password, 10);
-    let user = await getUserBy("email", email);
+    let user = await getUserBy(whereEmail);
     if (user[0]) {
       const validPass = await bcrypt.compare(password, user[0].password);
       if (validPass) {
@@ -75,7 +84,7 @@ router.post("/signUp", validateUser(), async (req, res, next) => {
       return;
     } else {
       await addUser(hash, email, name, age, description, phone, photo_url);
-      user = await getUserBy("email", email);
+      user = await getUserBy(whereEmail);
       const { password, ...rest } = user[0];
       const token = sign({ id: user[0].user_id });
       res.send({ user: rest, token: token });
@@ -88,7 +97,8 @@ router.post("/signUp", validateUser(), async (req, res, next) => {
 router.post("/login", validatelogin(), async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await getUserBy("email", email);
+    const whereEmail = `email = '${email}'`;
+    const user = await getUserBy(whereEmail);
     if (user[0]) {
       const validPass = await bcrypt.compare(password, user[0].password);
       if (validPass) {
@@ -112,6 +122,9 @@ router.put(
   authenticationToken(),
   validateEditUser(),
   async (req, res, next) => {
+    if (req.query.is_admin) {
+      isAdmin();
+    }
     try {
       const { id } = req.params;
       let set = "";
@@ -129,7 +142,8 @@ router.put(
           }
         });
         await updateUser(set, id);
-        const user = await getUserBy("user_id", id);
+        const where = `user_id = ${id}`;
+        const user = await getUserBy(where);
         res.send(user);
         return;
       }

@@ -12,6 +12,7 @@ const {
   validateNewPet,
 } = require("../middlewares/petValid.js");
 const { authenticationToken } = require("../middlewares/authToken");
+const isAdmin = require("../middlewares/isAdmin");
 
 const heightWeightString =
   "maxHeight maxWeight minHeight minWeight hypoallergenic";
@@ -59,6 +60,7 @@ router.get("/limit/:limit", async (req, res, next) => {
 router.put(
   "/edit/:pet_id",
   authenticationToken(),
+  isAdmin(),
   validatePet(),
   async (req, res, next) => {
     let set = "";
@@ -69,17 +71,9 @@ router.put(
         reqArr.forEach(([key, value], i) => {
           if (value && value !== "") {
             if (i === 0) {
-              // if (heightWeightString.includes(key)) {
-              //   set += `${heightWeight(key, value)}`;
-              // } else {
               set += `${key} = '${value}'`;
-              // }
             } else {
-              // if (heightWeightString.includes(key)) {
-              //   set += ` , ${heightWeight(key, value)}`;
-              // } else {
               set += ` , ${key} = '${value}'`;
-              // }
             }
           }
         });
@@ -96,6 +90,7 @@ router.put(
 router.post(
   "/addPet",
   authenticationToken(),
+  isAdmin(),
   validateNewPet(),
   validatePet(),
   async (req, res, next) => {

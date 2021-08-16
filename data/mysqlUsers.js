@@ -30,11 +30,9 @@ const addUser = async (
   }
 };
 
-const getUserBy = async (colName, value) => {
+const getUserBy = async (condition) => {
   try {
-    const user = await quary(
-      `SELECT * FROM users WHERE ${colName} = '${value}';`
-    );
+    const user = await quary(`SELECT * FROM users WHERE ${condition};`);
     return user;
   } catch (e) {
     return e;

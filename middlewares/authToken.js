@@ -10,8 +10,8 @@ const authenticationToken = () => {
       next();
     } catch (error) {
       console.log("not ok");
-      console.log(error);
-      res.status(401).send({ message: "Failed to authenticate", error });
+      res.send(error);
+      return;
     }
   };
 };

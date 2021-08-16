@@ -1,4 +1,5 @@
 const S = require("fluent-json-schema");
+const { quary } = require("../data/mysqlUsers");
 const validateS = require("./schemavalid");
 
 const newUserSchema = S.object()
