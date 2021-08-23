@@ -62,7 +62,7 @@ router.get(
       const { password, ...rest } = user[0];
       res.send(rest);
     } catch (err) {
-      next(err);
+      res.status(500).send(err);
     }
   }
 );

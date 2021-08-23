@@ -9,8 +9,7 @@ const authenticationToken = () => {
       req.decoded = decoded;
       next();
     } catch (error) {
-      console.log("not ok");
-      res.send(error);
+      res.status(401).send(error);
       return;
     }
   };
