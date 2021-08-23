@@ -36,9 +36,7 @@ router.get(
             }
           }
         });
-        console.log(where);
         const data = await getUserBy(where);
-        console.log(data);
         res.send(data);
         return;
       }
