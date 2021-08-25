@@ -46,7 +46,7 @@ const getPetsLikedByUser = async (user_id) => {
 const getUsersThatLikedPet = async (pet_id) => {
   try {
     const users = await quary(
-      `SELECT * FROM users WHERE user_id IN (SELECT user_id FROM likes WHERE pet_id = ${pet_id});`
+      `SELECT user_id,phone,name,description,age,photo_url FROM users WHERE user_id IN (SELECT user_id FROM likes WHERE pet_id = ${pet_id});`
     );
     return users;
   } catch (e) {

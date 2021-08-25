@@ -41,7 +41,9 @@ const getUserBy = async (condition) => {
 
 const getAllUsers = async (where) => {
   try {
-    const user = await quary(`SELECT * FROM users ${where};`);
+    const user = await quary(
+      `SELECT user_id,phone,name,description,age,photo_url FROM users ${where};`
+    );
     return user;
   } catch (e) {
     console.log(e);

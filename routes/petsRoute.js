@@ -87,6 +87,35 @@ router.put(
   }
 );
 
+router.put(
+  "/adoptOrFoster/:pet_id",
+  authenticationToken(),
+  validatePet(),
+  async (req, res, next) => {
+    let set = "";
+    const { pet_id } = req.params;
+    const reqArr = Object.entries(req.body);
+    try {
+      if (reqArr.length > 0) {
+        reqArr.forEach(([key, value], i) => {
+          if (value && value !== "") {
+            if (i === 0) {
+              set += `${key} = '${value}'`;
+            } else {
+              set += ` , ${key} = '${value}'`;
+            }
+          }
+        });
+        await updatePet(set, pet_id);
+      }
+      const data = await getPetsBy(`WHERE pet_id = ${pet_id}`);
+      res.send(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 router.post(
   "/addPet",
   authenticationToken(),
