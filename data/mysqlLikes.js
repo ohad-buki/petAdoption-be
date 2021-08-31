@@ -1,4 +1,4 @@
-const { pool } = require("./mysqlDB");
+const { pool } = require("./mysqldb");
 
 const quary = async (sqlText) => {
   return new Promise((resolve, reject) => {
