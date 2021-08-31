@@ -20,7 +20,5 @@ const pool = mysql.createPool({
   database: process.env.DB_USER_DEPLOY,
 });
 
-// const mysqlDB = { pool: pool, postgrator: postgrator };
-
 exports.pool = pool;
 exports.postgrator = postgrator;
