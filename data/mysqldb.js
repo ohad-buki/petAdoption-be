@@ -5,19 +5,19 @@ const Postgrator = require("postgrator");
 const postgrator = new Postgrator({
   migrationDirectory: "./migrations",
   driver: "mysql",
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST_DEPLOY,
   port: 3306,
-  database: "petadoption",
-  username: process.env.DB_USER,
-  password: process.env.DB_PASS,
+  database: process.env.DB_USER_DEPLOY,
+  username: process.env.DB_USER_DEPLOY,
+  password: process.env.DB_PASS_DEPLOY,
   schemaTable: "migrations",
 });
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: "petadoption",
+  host: process.env.DB_HOST_DEPLOY,
+  user: process.env.DB_USER_DEPLOY,
+  password: process.env.DB_PASS_DEPLOY,
+  database: process.env.DB_USER_DEPLOY,
 });
 
 // const mysqlDB = { pool: pool, postgrator: postgrator };
